@@ -32,7 +32,7 @@ public class AlunoController {
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) Integer idade) {
 
-            return ResponseEntity.status(HttpStatus.OK).body(this.alunoService.findAll(nome, idade));
-
+            return ResponseEntity.status(HttpStatus.OK)
+                                 .body(this.alunoService.findAll(nome, idade));
     }
 }

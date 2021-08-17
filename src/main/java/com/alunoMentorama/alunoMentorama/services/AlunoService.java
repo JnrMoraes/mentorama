@@ -2,6 +2,7 @@ package com.alunoMentorama.alunoMentorama.services;
 
 import com.alunoMentorama.alunoMentorama.domains.Aluno;
 import com.alunoMentorama.exceptions.RecursoInexistente;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class AlunoService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Nao foi possivel adicionar o aluno");
+            throw new RecursoInexistente("Nao foi possivel adicionar o aluno", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -54,7 +55,7 @@ public class AlunoService {
             return alunoList;
 
         } catch (Exception e) {
-            throw new RecursoInexistente();
+            throw new RecursoInexistente("Aluno não existente", HttpStatus.NOT_FOUND);
         }
     }
 }
