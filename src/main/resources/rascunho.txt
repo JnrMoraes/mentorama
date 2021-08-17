@@ -1,0 +1,114 @@
+//    @PostMapping
+//    public ResponseEntity<Integer> adicionarAluno(@RequestBody Aluno aluno) {
+//        alunoService.adicionarAluno(aluno);
+//        return new ResponseEntity<>(aluno.getId(), HttpStatus.CREATED);
+//    }
+//
+//    @GetMapping
+//    public ResponseEntity<List<Aluno>> findAll(
+//            @RequestParam(required = false) String nome,
+//            @RequestParam(required = false) Integer idade) {
+//        List<Aluno> alunos = alunoService.findAll(nome, idade);
+//        return new ResponseEntity<>(alunos, HttpStatus.OK);
+//    }
+
+
+//    @GetMapping("{id}")
+//    public Aluno findById(@PathVariable Integer id) {
+//        return this.alunoList.stream()
+//                .filter(aln -> aln.getId().equals(id))
+//                .findFirst()
+//                .orElse(null);
+//    }
+
+
+
+
+@RestController
+@RequestMapping("/aluno")
+public class AlunoController {
+
+   private List<Aluno> alunoList;
+
+    public AlunoController(List<Aluno> alunoList) {
+        this.alunoList = new ArrayList<>();
+    }
+
+    @PostMapping
+    public ResponseEntity<Integer> adicionarAluno(@RequestBody Aluno aluno) {
+        if (aluno.getId() == null) {
+            aluno.setId(alunoList.size() + 1);
+        }
+        alunoList.add(aluno);
+        return new ResponseEntity<>(aluno.getId(), HttpStatus.CREATED);
+    }
+
+
+    @GetMapping("{id}")
+    public Aluno findById(@PathVariable Integer id) {
+        return this.alunoList.stream()
+                .filter(aln -> aln.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // usado para requisitar por paramentros nome e idada
+    @GetMapping
+    public List<Aluno> findByAll(@RequestParam(required = false) String nome,
+                                 @RequestParam(required = false) Integer idade) {
+        if (nome != null) {
+            return alunoList.stream()
+                    .filter(aln -> aln.getNome().toLowerCase()
+                            .contains(nome.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (idade != null) {
+            return alunoList.stream()
+                    .filter(aln -> aln.getIdade().equals(idade))
+                    .collect(Collectors.toList());
+        }
+
+        return alunoList;
+    }
+
+    // busca por endpoint
+    @GetMapping("/nome")
+    public List<Aluno> findByNome(@RequestParam(required = false) String nome) {
+        if (nome != null) {
+            return alunoList.stream()
+                    .filter(aln -> aln.getNome().toLowerCase()
+                            .contains(nome.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        return alunoList;
+    }
+
+    @GetMapping("/idade")
+    public List<Aluno> findByIdade(@RequestParam(required = false) Integer idade) {
+        if (idade != null) {
+            return alunoList.stream()
+                    .filter(aln -> aln.getIdade().equals(idade))
+                    .collect(Collectors.toList());
+        }
+
+        return alunoList;
+    }
+
+    @PutMapping
+    public ResponseEntity alterarAluno(@RequestBody final Aluno aluno) {
+        Aluno aln = alunoList.stream()
+                .filter(aluno1 -> aluno1.getId().equals(aluno.getId()))
+                .findFirst().orElse(null);
+        assert aln != null;
+        aln.setNome(aluno.getNome());
+        aln.setIdade(aluno.getIdade());
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteAluno(@PathVariable("id") Integer id) {
+        alunoList.removeIf(aln -> aln.getId().equals(id));
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+}
